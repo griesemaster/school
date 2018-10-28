@@ -20,6 +20,20 @@ class Linked_List:
     def __len__(self):
         return self._length     #returns the length of the list, changed when nodes added/removed
 
+    def walk(self, index):
+        if self._length/2 > index:        #tests to see if inserting in front or back half of list to save time
+            current = self._header._next   #creates temp pointer to walk through list
+            current_index = 0      #index of temp pointer
+            while current_index < index - 1:    #walks pointer through list until in correct location
+                current = current._next         #moves pointer to next
+                current_index = current_index + 1
+        else:                               #triggers when the index in in back half of list
+            current = self._trailer._prev             #same process as above but walks backward
+            current_index = len(self) - 1
+            while current_index > index - 1:
+                current = current._prev
+                current_index = current_index - 1
+        return current
 
     def append_element(self, val):
         new_node = self.__Node(val)     #creates a new node and passes the value
@@ -34,26 +48,11 @@ class Linked_List:
         if index >= len(self) or index < 0:     #tests if valid index
             raise IndexError
         new_node = self.__Node(val)         #creates new node and passes value
-        if int(len(self)/2) > index:        #tests to see if inserting in front or back half of list to save time
-            current = self._header   #creates temp pointer to walk through list
-            current_index = -1      #index of temp pointer
-            while current_index < index - 1:    #walks pointer through list until in correct location
-                current = current._next         #moves pointer to next
-                current_index = current_index + 1   #increments pointer index
-            current._next._prev = new_node      #inserts node
-            new_node._prev = current
-            new_node._next = current._next
-            current._next = new_node
-        else:                               #triggers when the index in in back half of list
-            current = self._trailer             #same process as above but walks backward
-            current_index = len(self)
-            while current_index > index - 1:
-                current = current._prev
-                current_index = current_index - 1
-            current._next._prev = new_node
-            new_node._prev = current
-            new_node._next = current._next
-            current._next = new_node
+        current = self.walk(index)   #increments pointer index
+        current._next._prev = new_node      #inserts node
+        new_node._prev = current
+        new_node._next = current._next
+        current._next = new_node
         self._length = self._length + 1        #increments length to reflect new node
 
 
@@ -87,20 +86,8 @@ class Linked_List:
     def get_element_at(self, index):
         if index >= len(self) or index < 0: #checks for valid index
             raise IndexError
-        if int(len(self)/2) > index:    #creates walking pointer for first half of list
-            current = self._header
-            current_index = -1
-            while current_index < index: #walks pointer to desited node
-                current = current._next
-                current_index = current_index + 1
-            return current._val     #returns node value
-        else:
-            current = self._trailer #same as above but for backwards walking
-            current_index = len(self)
-            while current_index > index:
-                current = current._prev
-                current_index = current_index - 1
-            return current._val
+        current = self.walk(index)
+        return current._val
 
 
     def rotate_left(self):
@@ -145,75 +132,7 @@ class Linked_List:
 
 if __name__ == '__main__':
     ll = Linked_List()
-    try:
-        ll.insert_element_at(0,0)
-    except IndexError:
-        print("Cannot insert to empty List")
-    print("currentrent length: ", len(ll))
-    print(ll,'1')
-    try:
-        print(ll.get_element_at(0))
-    except IndexError:
-        print("Invalid Index, no value to read")
-    try:
-        ll.rotate_left()
-    except IndexError:
-        print("Cannot rotate empty list")
-    try:
-        ll.remove_element_at(0)
-    except IndexError:
-        print("Cannot remove from empty list")
-
-
-    ll.append_element(0)
-    print("New length: ", len(ll))
-    print(ll,'2')
-    try:
-        ll.insert_element_at(1,1)
-    except IndexError:
-        print("Cannot append 1 to end of list")
-    print(ll,'3')
-    try:
-        print(ll.get_element_at(0))
-    except IndexError:
-        print("Invalid Index, no value to read")
-    try:
-        ll.rotate_left()
-    except IndexError:
-        print("Cannot rotate empty list")
-    print(ll,'4')
-    try:
-        ll.remove_element_at(0)
-    except IndexError:
-        print("Cannot rotate empty list")
-    print(ll,'5')
-
-
-
-    ll.append_element(0)
-    ll.append_element(1)
+    for int in range(25):
+        ll.append_element(int)
     print(ll)
-    try:
-        ll.insert_element_at(2,0)
-        print("insert 2 at position 0")
-    except IndexError:
-        print("Cannot append to end of list")
-    print("New length: ", len(ll))
-    print(ll)
-    try:
-        ll.remove_element_at(30)
-    except IndexError:
-        print("Cannot remove from this Index (30)")
-    try:
-        print("Remove element at pos 1")
-        ll.remove_element_at(1)
-    except IndexError:
-        print("Cannot remove from this Index (1)")
-    print("New length: ", len(ll))
-    print(ll)
-    ll.append_element('Data')
-    print("New length: ", len(ll))
-    print(ll)
-    print("iteration over the list:")
-    for element in ll:
-        print(element)
+    print(ll.get_element_at(24))
